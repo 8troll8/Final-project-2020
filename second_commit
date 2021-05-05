@@ -1,0 +1,109 @@
+var bossFight = function () {
+    
+    //draws trees
+    
+     for(var i = 0; i < 5; i++) {
+    fill(140, 99, 24);
+    rect(85*i+10,98,40,300);
+    fill(17, 219, 34);
+    ellipse(85*i+29,80,100,100);
+}
+
+    noStroke();
+    
+    //draws the hero
+    
+    hero.draw();
+    
+    
+    textSize(12);
+    
+    //calls the blank health bar at an x of 50
+    removeHealth(50);
+    
+    
+    timer(-10);
+    
+    
+    text("Time: "+time[1],10,8);
+    
+    
+    text("Health: ",10,28);
+    
+    
+    //if the time is between 293 and 285 then the message will play
+    if(time[1] > 285 && time[1] < 293) {
+         noFill();
+        textSize(12);
+        text("Hero: these heads seem invincible... but their source isn't!", 50,75);
+    }
+    
+     //if the time is between 295 and 300 then the message will play
+    
+    if(time[1] > 295 && time[1] < 300) {
+         noFill();
+        textSize(12);
+        text("Bitmoji lord: You're an excellent warrior! Time to finish things!", 50,75);
+    }
+    
+    //at 295 seconds then all these things will spawn 
+    if(time[1] < 295) {
+       bitLord.draw();  
+       bitLord.charge();
+       powerSource.draw();
+    
+    }
+    
+    if(posX >= 400) {
+        posX = 0;
+        time[1] = time[1] -1;
+    }
+    if(time[1] <= 0) {
+        time[1] = 0;
+    }
+    
+    //health bar for the hero
+    
+     if(hero.health === 8) {
+         removeHealth();
+        fullHealth(120,110,100,90,80,70,60,50,30);
+}
+    if(hero.health === 7) {
+         fullHealth(-20,110,100,90,80,70,60,50,30);
+    }
+    
+     if(hero.health === 6) {
+         fullHealth(-20,-20,100,90,80,70,60,50,30);
+    }
+     if(hero.health === 5) {
+         fullHealth(-20,-20,-20,90,80,70,60,50,30);
+    }
+     if(hero.health === 4) {
+         fullHealth(-20,-20,-20,-20,80,70,60,50,30);
+    }   
+     if(hero.health === 3) {
+         fullHealth(-20,-20,-20,-20,-20,70,60,50,30);
+    }    
+     if(hero.health === 2) {
+          removeHealth();
+         fullHealth(-20,-20,-20,-20,-20,-20,60,50,30);
+    }
+     if(hero.health === 1) {
+         fullHealth(-20,-20,-20,-20,-20,-20,-20,50,30);
+    }
+        
+    if(hero.health === 0) {
+        removeHealth();
+        currentScreen = 7;
+    }
+    
+    
+    //if the hero and bitlord touch then the hero will take damage
+    hero.checkForCollision(bitLord);
+    
+    //if the powersource's health is 0 then you are taken to the winning screen
+    if(powerSource.health === 0) {
+        currentScreen = 5;
+    }
+   
+};
