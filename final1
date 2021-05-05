@@ -1,0 +1,56 @@
+// The start game button
+var btn1 = new Button({
+    x: 136,
+    y: 248,
+    label: "Start Game ",
+    onClick: function() {
+       currentScreen = 1;
+    }    
+});
+// High Score Button
+
+// How to play button
+var btn3 = new Button({
+    x: 260,
+    y: 310,
+    label: "     Next",
+    onClick: function() {
+       currentScreen = 8;
+    }    
+});
+// Button that puts user to splash screen
+var btn4 = new Button({
+    x: 136,
+    y: 347,
+    label: "    mobs",
+    onClick: function() {
+       currentScreen = 6;
+    }    
+});
+// 
+var btn2 = new Button({
+    x: 100,
+    y: 320,
+    label: "    Home ",
+    onClick: function() {
+       currentScreen = 0;
+    }    
+});
+// 
+var btn6 = new Button({
+    x: 136,
+    y: 297,
+    label: "How to play ",
+    onClick: function() {
+       currentScreen = 9;
+    }    
+});
+
+var btn7 = new Button({
+    x: 142,
+    y: 320,
+    label: "Home",
+    onClick: function() {
+       currentScreen = 0;
+    }    
+});
