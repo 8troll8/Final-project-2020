@@ -1,0 +1,41 @@
+draw = function() {
+    
+    //if draws everything inside of the starting screen
+    if (currentScreen === 0) {
+        
+        background(0, 81, 255);
+        
+        for(var i = 0; i < 5; i++) {
+    fill(140, 99, 24);
+    rect(85*i+10,98,40,300);
+    fill(17, 219, 34);
+    ellipse(85*i+29,80,100,100);
+}
+        
+        textSize(25);
+        
+        fill(255, 255, 255);
+        
+        text("Trovato + Rascoe",100,20);
+        
+        text("BIT",170,200);
+        
+        noStroke();
+        
+        drawemoji(-236,188,289);   // David Emoji
+        
+        drawBitmojiHead(416,209,300);
+        
+        drawBitmojiLeftEye(416,209,300);
+        
+        drawBitmojiRightEye(416,209,300); // Jake Emoji
+        drawHat(416,209,300);
+        
+        drawMask(416,209,300);
+        
+        btn1.draw();
+        
+        btn4.draw();
+      
+        btn6.draw();
+    }
