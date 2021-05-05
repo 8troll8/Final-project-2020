@@ -1,0 +1,1477 @@
+<DOCTYPE! html>
+<html> 
+<meta character = "utf8"> 
+ 
+  
+      <body> <center>
+        <p> //health bars*, characters, setting, splash screen, score system, timer*
+var currentScreen = 0;
+
+var time = [0,1,2];
+
+//holds time for level 1 + 2
+
+time[0] = 600;
+
+//holds time for boss fight
+
+time[1] = 300;
+
+//determines how fast the cube is
+
+var timerSpeed = 6.6667;
+
+//starting x position of the cube that is in the timer
+
+var posX = 0;
+
+
+//button class 
+
+var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 109;
+    this.height = config.height || 43;
+    this.label = config.label || "Click";
+    this.onClick = config.onClick || function() {};
+};
+
+// Method to "draw" the button 
+Button.prototype.draw = function() {
+    fill(46, 104, 179);
+    rect(this.x, this.y, this.width, this.height, 5);
+    fill(242, 239, 242);
+    textSize(17);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x+10, this.y+this.height/4);
+};
+
+// Method for mouseX and mouseY locations
+Button.prototype.isMouseInside = function() {
+    return mouseX > this.x &&
+           mouseX < (this.x + this.width) &&
+           mouseY > this.y &&
+           mouseY < (this.y + this.height);
+};
+
+// Method to handle what happens on mouse click
+Button.prototype.handleMouseClick = function() {
+    if (this.isMouseInside()) {
+        this.onClick();
+    }
+};
+
+var btn1 = new Button({
+    x: 136,
+    y: 248,
+    label: "Start Game ",
+    onClick: function() {
+       currentScreen = 1;
+    }    
+});
+
+
+var btn3 = new Button({
+    x: 260,
+    y: 310,
+    label: "     Next",
+    onClick: function() {
+       currentScreen = 8;
+    }    
+});
+// Button that puts user to splash screen
+var btn4 = new Button({
+    x: 136,
+    y: 347,
+    label: "    mobs",
+    onClick: function() {
+       currentScreen = 6;
+    }    
+});
+// Restart Button when the game ends 
+
+var btn2 = new Button({
+    x: 100,
+    y: 320,
+    label: "    Home ",
+    onClick: function() {
+       currentScreen = 0;
+    }    
+});
+
+var btn6 = new Button({
+    x: 136,
+    y: 297,
+    label: "How to play ",
+    onClick: function() {
+       currentScreen = 9;
+    }    
+});
+
+var btn7 = new Button({
+    x: 142,
+    y: 320,
+    label: "Home",
+    onClick: function() {
+       currentScreen = 0;
+    }    
+});
+
+//draws David's bitmoji
+var drawemoji = function(x,y,h)
+{
+
+noStroke();
+fill(214, 175, 133);      // skin
+ellipse(x+85*h/100,y+7*h/100,83*h/100,100*h/100);   // head
+fill(0, 0, 0);
+//arc(x+40*h/100,y+25*h/100,28*h/100,55*h/100,0,361); // left chin
+fill(0, 0, 0);
+//arc(x+130*h/100,y+25*h/100,28*h/100,55*h/100,0,361);  // right chin
+fill(235, 222, 155);
+rect(x+42*h/98,y+-50*h/113,84*h/109,h-67*h/92);
+
+fill(14, 123, 240);  // left eye
+ellipse(x+70*h/100,y+2*h/100,6*h/100,4*h/100);
+fill(18, 119, 227);  // right eye
+ellipse(x+99*h/100,y+2*h/100,6*h/100,4*h/100);
+stroke(0,0,0);
+noStroke();
+fill(0, 0, 0);
+ellipse(x+86*h/100,y+25*h/100,16*h/100,5*h/100);  // mouth
+noStroke();
+fill(36, 35, 36);
+//rect(x+37*h/100,y+50*h/100,101*h/100,123*h/100); //shirt 
+
+fill(247, 244, 247);   // Initials
+textSize(12);
+text("David Rascoe",x+75*h/100,y+96*h/100); 
+
+};
+
+
+//draws jacob's bitmoji
+noStroke();
+
+var drawBitmojiHead = function(side,vert,BitmojiHeight) {
+    strokeWeight(1);
+fill(219, 213, 147);
+    ellipse( side, vert,  BitmojiHeight/100*100,  BitmojiHeight/100*100); //head
+   
+};
+
+var drawBitmojiRightEye = function(side,vert,BitmojiHeight) {
+    fill(99, 91, 29);
+    ellipse(side + BitmojiHeight/100*20,vert- BitmojiHeight/100*10,  BitmojiHeight/100*15, BitmojiHeight/100*15);
+};
+
+var drawBitmojiLeftEye = function(side,vert,BitmojiHeight) {
+    fill(99, 91, 29);
+    ellipse(side- BitmojiHeight/100*20,vert- BitmojiHeight/100*10,  BitmojiHeight/100*15, BitmojiHeight/100*15);
+};
+
+var drawBitmojiBody = function(side,vert,BitmojiHeight) {
+    fill(255, 0, 0);
+    triangle(side-(BitmojiHeight/100),vert+(BitmojiHeight/100*50),side-BitmojiHeight/100*50, vert+BitmojiHeight/100*100,side+ BitmojiHeight/100*50, vert+BitmojiHeight/100*100); //body
+    fill(255,255,255);
+    text("J.T.",side- BitmojiHeight/100*10, vert+ BitmojiHeight/100*65); //"J"
+};
+
+var drawNeck = function (side,vert,BitmojiHeight){
+    fill(219, 213, 147);
+    rect(side- BitmojiHeight/100*10, vert+ BitmojiHeight/100*45,  BitmojiHeight/100*20,  BitmojiHeight/100*22); //neck
+};
+
+var drawHat = function(side,vert,BitmojiHeight) {
+    fill(0, 0, 0);
+    arc( side,  vert- BitmojiHeight/100*30,   BitmojiHeight/100*80,BitmojiHeight/100*-50, 1, 180); stroke(0); //hat
+};
+
+var drawMask = function (side,vert,BitmojiHeight) {
+    strokeWeight(0);
+    fill(24, 24, 112);
+    arc( side, vert,  BitmojiHeight/100*100,  BitmojiHeight/100*100, 1, 180); //mask  
+    fill(255,255,255);
+    textSize(BitmojiHeight/100*30);
+    text("R",side+ BitmojiHeight/100*20, vert+ BitmojiHeight/100*30);
+};
+
+
+//constructor the bitlord
+
+var BitLord = function (x,y) {
+    this.x = x;
+    this.y = y;
+
+};
+
+//method to draw boss
+
+BitLord.prototype.draw = function() {
+        drawBitmojiHead(this.x,this.y,60);
+        drawBitmojiLeftEye(this.x,this.y,60);
+        drawBitmojiRightEye(this.x,this.y,60);
+        drawHat(this.x,this.y,60);
+        drawMask(this.x,this.y,60);
+       
+};
+
+//instance of bitlord that attacks you
+
+var bitLord = new BitLord(400,(round(random(200,400)),100));
+
+//bitlord in the mobs section
+var bitLordS = new BitLord(200,155,100);
+
+
+//method that has the bitlord "charge" or move across the screen
+BitLord.prototype.charge = function () {
+    this.x = this.x - 6;
+    if(bitLord.x < 0) {
+        bitLord.x = 400;
+        bitLord.y = round(random(100,300));
+    }
+};
+
+//constructor of powersource
+
+var PowerSource = function (x,y,health) {
+    this.x = x;
+    this.y = y;
+    this.health = health;
+    
+};
+
+
+//draw method of powersource
+
+PowerSource.prototype.draw = function() {
+    fill(117, 87, 11);
+     rect(this.x,this.y,10,50);
+     rect(this.x-19,this.y+50,50,10);
+     fill(148, 148, 148);
+      rect(this.x,this.y,10,10);
+};
+
+//draws powersource in the boss's level
+
+var powerSource = new PowerSource(350,200,16);
+
+//draws powersource in the mobs section
+
+var powerSourceS = new PowerSource(273,194,16);
+
+//constructor for sword
+
+var Sword = function (x,y,height) {
+    this.x = x;
+    this.y = y;
+    this.height = height;
+    
+};
+
+//object that creates the look of the sword
+
+Sword.prototype.draw = function() {
+    this.x = constrain(this.x, 25, height-25);
+    this.y = constrain(this.y, 0, height-100);
+     fill(238, 255, 0);
+    rect(this.x+35,this.y+5,10,25);
+    fill(168, 121, 12);
+    rect(this.x+25,this.y+13,10,10);
+    fill(179, 165, 165);
+    rect(this.x+45,this.y+13,40,10);
+    noStroke();
+    triangle(this.x+85,this.y+23,this.x+85,this.y+13,this.x+95,this.y+18);
+    stroke(0, 0, 0);
+    strokeWeight(1);
+    line(this.x+95,this.y+18,this.x+46,this.y+18);
+    line(this.x+95,this.y+18,this.x+85,this.y+13);
+    line(this.x+95,this.y+18,this.x+85,this.y+24);
+};
+
+//constructor for bitminion
+
+var Bitminion = function (x,y,speed,health) {
+    this.x = x;
+    this.y = y;
+    this.speed = speed;
+    this.health = health;
+};
+
+//draws the design for bitminion
+
+Bitminion.prototype.draw = function() {
+        drawBitmojiHead(this.x,this.y,30);
+        drawBitmojiLeftEye(this.x,this.y,30);
+        drawBitmojiRightEye(this.x,this.y,30);
+        drawHat(this.x,this.y,30);
+        drawMask(this.x,this.y,30);
+        drawBitmojiBody(this.x,this.y,30);
+};
+
+//makes bitminion move left
+
+Bitminion.prototype.chaser = function () {
+    this.x -= 1;
+};
+
+//makes bitminion move right
+
+Bitminion.prototype.chasel = function () {
+    this.x += 1;
+};
+
+//makes bitminion move up
+
+Bitminion.prototype.upchase = function () {
+    
+    this.y -= 1;
+};
+
+//makes bitminion move down
+
+Bitminion.prototype.downchase = function () {
+    
+    this.y += 1;
+};
+
+//creates instance of bitminion
+
+var bitminion = new Bitminion(0,100,4,8);
+
+//hero constructor
+
+var Hero = function (x,y,width,height,health) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.health = health;
+};
+
+//draw method for hero
+
+Hero.prototype.draw = function() {
+    this.x = constrain(this.x, 25, height-75);
+    this.y = constrain(this.y, 60, height-75);
+     fill(224, 194, 112);
+     arc(this.x-21,this.y+25,this.width-15,this.height-15,1,245); //hands
+     arc(this.x+21,this.y+25,this.width-15,this.height-15,-95,180);
+     fill(0, 0, 0);
+     rect(this.x-10,this.y+15,this.width-5,this.height-5);  // body
+     ellipse(this.x+15,this.y+20,this.width-10,this.height-10); // shoulders
+     ellipse(this.x-15,this.y+20,this.width-10,this.height-10);
+     fill(224, 194, 112);
+     arc(this.x,this.y+15,this.width-10,this.height-10,1,180); //chest from cut of the shirt
+     ellipse(this.x,this.y,this.width,this.height); //head
+     fill(0, 0, 0);
+     ellipse(this.x+8,this.y,this.width-20,this.height-20);//eyes
+     ellipse(this.x-6,this.y,this.width-20,this.height-20);
+     fill(224, 194, 112);
+     rect(this.x-5,this.y+6,this.width-15,this.height-15);//neck
+     fill(0, 38, 255);
+     rect(this.x-10,this.y+35,this.width-5,this.height-15);//pants
+     fill(0, 38, 255);
+     rect(this.x-10,this.y+45,this.width-5,this.height); //legs
+     stroke(0);
+     line(this.x-1,this.y+45,this.x-1,this.y+69); //pants lines
+     line(this.x-10,this.y+45,this.x+9,this.y+45);
+     fill(255, 255, 255);
+     arc(this.x+0,this.y+5,this.width-15,this.height-15,1,180);
+     
+};
+
+//draw method for sword
+
+Hero.prototype.sword1 = function() {
+    fill(238, 255, 0);
+    rect(this.x+35,this.y+5,10,25);
+    fill(168, 121, 12);
+    rect(this.x+25,this.y+13,10,10);
+    fill(179, 165, 165);
+    rect(this.x+45,this.y+13,40,10);
+    noStroke();
+    triangle(this.x+85,this.y+23,this.x+85,this.y+13,this.x+95,this.y+18);
+    stroke(0, 0, 0);
+    strokeWeight(1);
+    line(this.x+95,this.y+18,this.x+46,this.y+18);
+    line(this.x+95,this.y+18,this.x+85,this.y+13);
+    line(this.x+95,this.y+18,this.x+85,this.y+24);
+};
+
+//creates instance of hero
+
+var hero = new Hero(100,200,25,25,8);
+
+//creates instance of sword
+
+var sword1 = new Sword (hero.x,hero.y,100);
+
+//method for bitminion's teleporting
+
+Bitminion.prototype.freeze = function (hero) {
+    if((hero.x >= this.x && hero.x <= (this.x + 80)) &&
+        (hero.y >= this.y && hero.y <= (this.y + 50))) {
+        hero.x = random(0,400);
+        hero.y = random(0,400);
+        bitminion.x = random(0,400);
+        bitminion.y = random(0,400);
+        sword1.x = hero.x;
+        sword1.y = hero.y;
+        
+        }
+};
+
+//makes the sword follow the hero everywhere
+
+Sword.prototype.rightWalk = function () {
+    this.x = hero.x;
+};
+Sword.prototype.leftWalk = function () {
+    this.x = hero.x;
+};
+Sword.prototype.jump = function () {
+    this.y  = hero.y;
+};
+Sword.prototype.fall = function () {
+    this.y += 5;
+};
+
+//when called, it dictates the hero movements 
+
+Hero.prototype.rightWalk = function () {
+    this.x += 5;
+};
+Hero.prototype.leftWalk = function () {
+    this.x -= 5;
+};
+Hero.prototype.jump = function () {
+    this.y  -= 5;
+};
+Hero.prototype.fall = function () {
+    this.y += 5;
+};
+
+// the constructor for the zombie
+
+var Zombie = function (x,y,width,height,health,damage) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.health = health;
+    this.damage = damage;
+};
+
+//draw method for zombie
+
+Zombie.prototype.draw = function() {
+    this.y = constrain(this.y, 0, height-75);
+    noStroke();
+     fill(0, 255, 21);
+     arc(this.x-21,this.y+25,this.width-15,this.height-15,1,245); //hands
+     arc(this.x+21,this.y+25,this.width-15,this.height-15,-95,180);
+     fill(0, 0, 0);
+     rect(this.x-10,this.y+15,this.width-5,this.height-5);  // body
+     ellipse(this.x+15,this.y+20,this.width-10,this.height-10); // shoulders
+     ellipse(this.x-15,this.y+20,this.width-10,this.height-10);
+     fill(0, 255, 21);
+     arc(this.x,this.y+15,this.width-10,this.height-10,1,180); //chest from cut of the shirt
+     ellipse(this.x,this.y,this.width,this.height); //head
+     fill(0, 0, 0);
+     ellipse(this.x+8,this.y,this.width-20,this.height-20);//eyes
+     ellipse(this.x-6,this.y,this.width-20,this.height-20);
+     fill(0, 255, 21);
+     rect(this.x-5,this.y+6,this.width-15,this.height-15);//neck
+     fill(0, 38, 255);
+     rect(this.x-10,this.y+35,this.width-5,this.height-15);//pants
+     fill(0, 38, 255);
+     rect(this.x-10,this.y+45,this.width-5,this.height); //legs
+     stroke(0);
+     line(this.x-1,this.y+45,this.x-1,this.y+69); //pants lines
+     line(this.x-10,this.y+45,this.x+9,this.y+45);
+     fill(0, 0, 0);
+     arc(this.x+0,this.y+5,this.width-15,this.height-15,1,180);
+};
+
+var zombie = new Zombie((300,400),random(60,400),25,25,8,1);
+var zombie2 = new Zombie((400),(400),25,25,8,1);
+var zombie3 = new Zombie((0),(0),25,25,8,1);
+var zombieS = new Zombie(200,195,25,25,8,1);
+
+
+//dictates the zombie's movement
+
+Zombie.prototype.fall = function () {
+    this.y += 1;
+};
+
+Zombie.prototype.runL = function () {
+    this.x -= 1;
+};
+
+Zombie.prototype.runR = function () {
+    this.x += 1;
+};
+
+Zombie.prototype.rise = function () {
+    this.y -= 1;
+};
+
+//when called moves the zombie's position
+
+Zombie.prototype.defeated = function () {
+    this.x = 700;
+};
+
+//when called, moves the bitminion's position
+
+
+Bitminion.prototype.defeated = function () {
+    this.x = 700;
+};
+
+//when the hero object and another mob collide, the hero takes damage
+
+Hero.prototype.checkForCollision = function (zombie) {
+     if ((zombie.x >= this.x && zombie.x <= (this.x + 50)) &&
+        (zombie.y >= this.y && zombie.y <= (this.y + 100))) {
+        hero.health = hero.health - 1;
+    
+    }
+};
+
+//when the hero object and another mob collide, the hero takes damage (specifically zombie2)
+
+Hero.prototype.checkForCollision2 = function (zombie2) {
+     if ((zombie2.x >= this.x && zombie2.x <= (this.x + 50)) &&
+        (zombie2.y >= this.y && zombie2.y <= (this.y + 100))) {
+        hero.health = hero.health - 1;
+    
+    }
+};
+
+//when the hero object and another mob collide, the hero takes damage (specifically zombi3)
+
+
+Hero.prototype.checkForCollision3 = function (zombie3) {
+     if ((zombie3.x >= this.x && zombie3.x <= (this.x + 30)) &&
+        (zombie3.y >= this.y && zombie3.y <= (this.y + 100))) {
+        hero.health = hero.health - 1;
+    
+    }
+};
+
+//when the mobs are in the x+y of the sword, they take damage
+
+Sword.prototype.checkForSwordDmg = function (zombie) {
+     if ((zombie.x >= this.x && zombie.x <= (this.x + 120)) &&
+        (zombie.y >= this.y && zombie.y <= (this.y + 50))) {
+        zombie.health = zombie.health - 1;
+    
+    }
+};
+
+//specifically checks for collision between the sword and powersource 
+
+Sword.prototype.checkForSwordDmgS = function (powerSource) {
+     if ((powerSource.x >= this.x && powerSource.x <= (this.x + 120)) &&
+        (powerSource.y >= this.y && powerSource.y <= (this.y + 150))) {
+        powerSource.health = powerSource.health - 1;
+    
+    }
+};
+
+//specifically checks for collision between the sword and powersource 
+
+Sword.prototype.checkForSwordDmgB = function (bitminion) {
+     if ((bitminion.x >= this.x && bitminion.x <= (this.x + 120)) &&
+        (bitminion.y >= this.y && bitminion.y <= (this.y + 50))) {
+        bitminion.health = bitminion.health - 1;
+    
+    }
+};
+
+//creates an instance of the hero given these parameters
+
+var hero = new Hero(100,200,25,25,8);
+
+//function for 0 health
+
+var removeHealth = function (noHealthX) {
+    
+    for(var k = 0; k < 8; k++) {
+        fill(173, 155, 155);
+        noStroke();
+        rect((10*k)+noHealthX,30,10,10);
+    }
+    fill(255, 255, 255);
+    
+};
+
+//function for the health bars
+
+var fullHealth = function (health1X,health2X,health3X,health4X,health5X,health6X,health7X,health8X,healthY) {
+    fill(62, 242, 12);
+    noStroke();
+        rect((health8X),healthY,10,10);
+        rect((health7X),healthY,10,10);
+        rect((health6X),healthY,10,10);
+        rect((health5X),healthY,10,10);
+        rect((health4X),healthY,10,10);
+        rect((health3X),healthY,10,10);
+        rect((health2X),healthY,10,10);
+        rect((health1X),healthY,10,10);
+    fill(245, 245, 245);
+   
+};
+
+//function for timer
+
+var timer = function () {
+    
+    rect(posX,-20,10,10);
+    
+    posX += timerSpeed;
+    
+};
+
+//function for the 2nd level that draws the 2 zombies and bitminion
+
+var drawlevel2 = function () {
+    
+    //draws trees
+    
+    background(135, 135, 135);
+    for(var i = 0; i < 5; i++) {
+    fill(140, 99, 24);
+    rect(85*i+10,98,40,300);
+    fill(17, 219, 34);
+    ellipse(85*i+29,80,100,100);
+}
+    
+    //draws blank health bar
+    removeHealth(50,30);
+    
+    noFill();
+    
+    textSize(12);
+    
+    //draws time
+    text("Time: "+time[0],8,8);
+
+    //draws cube that controls timer
+    timer(-10);
+
+
+    //conditional that if the cube reaches the other side then it subtracts a second
+if(posX >= 400) {
+        posX = 0;
+        time[0] = time[0] -1;
+    }
+    if(time[0] <= 0) {
+        time[0] = 0;
+    
+}
+
+    textSize(12);
+    
+    //
+    
+    text("Health: ",8,28);
+    
+    noStroke();
+    
+    hero.draw();
+    
+    bitminion.draw();
+    
+    zombie2.draw();
+    
+    zombie3.draw();
+    
+    //if the zombie is on the screen then the health bar is present
+
+    if(zombie2.x > 0 && zombie2.x < 600 && zombie2.y > 0 && zombie2.y < 400) {
+if(zombie2.health === 8) {
+        fill(255, 255, 255);
+        textSize(12);
+        text("Zombie Health: ", 210,48);
+        fullHealth(300,310,320,330,340,350,360,370,50);
+      
+}
+    //if at 7 health then draw health bar with one cube missing
+    
+    if(zombie2.health === 7) {
+         textSize(12);
+         fill(255, 255, 255);
+        text("Zombie Health: ", 210,48);
+        fullHealth(-20,310,320,330,340,350,360,370,50);
+         
+    }
+    
+     if(zombie2.health === 6) {
+          textSize(12);
+          fill(255, 255, 255);
+         removeHealth(300,70);
+           text("Zombie Health: ", 210,48);
+         fullHealth(-20,-20,320,330,340,350,360,370,50);
+         
+    }
+     if(zombie2.health === 5) {
+          textSize(12);
+          fill(255, 255, 255);
+         removeHealth(300,70);
+          text("Zombie Health: ", 210,48);
+         fullHealth(-20,-20,-20,330,340,350,360,370,50);
+         
+    }
+     if(zombie2.health === 4) {
+          textSize(12);
+          fill(255, 255, 255);
+         text("Zombie Health: ", 210,48);
+         removeHealth(300,70);
+         fullHealth(-20,-20,-20,-20,340,350,360,370,50);
+         
+    }   
+     if(zombie2.health === 3) {
+          textSize(12);
+          fill(255, 255, 255);
+         text("Zombie Health: ", 210,48);
+         removeHealth(300,70);
+         fullHealth(-20,-20,-20,-20,-20,350,360,370,50);
+         
+    }    
+     if(zombie2.health === 2) {
+        
+         removeHealth(300,70);
+         fill(255, 255, 255);
+         textSize(12);
+          text("Zombie Health: ", 210,48);
+         fullHealth(-20,-20,-20,-20,-20,-20,360,370,50);
+         
+    }
+     if(zombie2.health === 1) {
+         fill(255, 255, 255);
+          textSize(12);
+         removeHealth(300,70);
+         text("Zombie Health: ", 210,48);
+         fullHealth(-20,-20,-20,-20,-20,-20,-20,370,50);
+         
+    }
+        //if the zombie has no health left then it is removed from the screen
+    if(zombie2.health === 0) {
+        
+        textSize(12);
+        removeHealth();
+        zombie2.defeated();
+        currentScreen = 3;
+        
+        
+        
+    }
+}
+     if(zombie3.x > 0 && zombie3.x < 600 && zombie3.y > 0 && zombie3.y < 400) {
+if(zombie3.health === 8) {
+        textSize(12);
+        fill(255, 255, 255);
+        text("Zombie Health: ",213,28);
+        fullHealth(300,310,320,330,340,350,360,370,30);
+      
+}
+    if(zombie3.health === 7) {
+          textSize(12);
+          fill(255, 255, 255);
+         text("Zombie Health: ",213,28);
+        fullHealth(-20,310,320,330,340,350,360,370,30);
+         
+    }
+    
+     if(zombie3.health === 6) {
+          textSize(12);
+          fill(255, 255, 255);
+          text("Zombie Health: ",213,28);
+         fullHealth(-20,-20,320,330,340,350,360,370,30);
+         
+    }
+     if(zombie3.health === 5) {
+         textSize(12);
+                   fill(255, 255, 255);
+
+          text("Zombie Health: ",213,28);
+         fullHealth(-20,-20,-20,330,340,350,360,370,30);
+         
+    }
+     if(zombie3.health === 4) {
+          textSize(12);
+                    fill(255, 255, 255);
+
+          text("Zombie Health: ",213,28);
+         fullHealth(-20,-20,-20,-20,340,350,360,370,30);
+         
+    }   
+     if(zombie3.health === 3) {
+           textSize(12);
+                     fill(255, 255, 255);
+
+          text("Zombie Health: ",213,28);
+         fullHealth(-20,-20,-20,-20,-20,350,360,370,30);
+         
+    }    
+     if(zombie3.health === 2) {
+           textSize(12);
+           fill(255, 255, 255);
+          text("Zombie Health: ",213,28);
+         fullHealth(-20,-20,-20,-20,-20,-20,360,370,30);
+         
+    }
+     if(zombie3.health === 1) {
+           textSize(12);
+           fill(255, 255, 255);
+          text("Zombie Health: ",213,28);
+         fullHealth(-20,-20,-20,-20,-20,-20,-20,370,30);
+         
+    }
+        
+    if(zombie3.health === 0) {
+        
+        textSize(12);
+        zombie3.defeated();
+    }
+}
+
+//if bitminion has no health then it is reermoved from the screen
+
+    if(bitminion.health === 0) {
+         
+         
+         bitminion.defeated();
+         textSize(12);
+         
+    }
+
+
+if(hero.health === 8) {
+        
+        fullHealth(120,110,100,90,80,70,60,50,30);
+}
+    if(hero.health === 7) {
+         fullHealth(-20,110,100,90,80,70,60,50,30);
+    }
+    
+     if(hero.health === 6) {
+         fullHealth(-20,-20,100,90,80,70,60,50,30);
+    }
+     if(hero.health === 5) {
+         fullHealth(-20,-20,-20,90,80,70,60,50,30);
+    }
+     if(hero.health === 4) {
+         fullHealth(-20,-20,-20,-20,80,70,60,50,30);
+    }   
+     if(hero.health === 3) {
+         fullHealth(-20,-20,-20,-20,-20,70,60,50,30);
+    }    
+     if(hero.health === 2) {
+         fullHealth(-20,-20,-20,-20,-20,-20,60,50,30);
+    }
+     if(hero.health === 1) {
+         fullHealth(-20,-20,-20,-20,-20,-20,-20,50,30);
+    }
+        
+    if(hero.health === 0) {
+        removeHealth();
+        currentScreen = 7;
+    }
+};
+
+var bossFight = function () {
+    
+    //draws trees
+    
+     for(var i = 0; i < 5; i++) {
+    fill(140, 99, 24);
+    rect(85*i+10,98,40,300);
+    fill(17, 219, 34);
+    ellipse(85*i+29,80,100,100);
+}
+
+    noStroke();
+    
+    //draws the hero
+    
+    hero.draw();
+    
+    
+    textSize(12);
+    
+    //calls the blank health bar at an x of 50
+    removeHealth(50);
+    
+    
+    timer(-10);
+    
+    
+    text("Time: "+time[1],10,8);
+    
+    
+    text("Health: ",10,28);
+    
+    
+    //if the time is between 293 and 285 then the message will play
+    if(time[1] > 285 && time[1] < 293) {
+         noFill();
+        textSize(12);
+        text("Hero: these heads seem invincible... but their source isn't!", 50,75);
+    }
+    
+     //if the time is between 295 and 300 then the message will play
+    
+    if(time[1] > 295 && time[1] < 300) {
+         noFill();
+        textSize(12);
+        text("Bitmoji lord: You're an excellent warrior! Time to finish things!", 50,75);
+    }
+    
+    //at 295 seconds then all these things will spawn 
+    if(time[1] < 295) {
+       bitLord.draw();  
+       bitLord.charge();
+       powerSource.draw();
+    
+    }
+    
+    if(posX >= 400) {
+        posX = 0;
+        time[1] = time[1] -1;
+    }
+    if(time[1] <= 0) {
+        time[1] = 0;
+    }
+    
+    //health bar for the hero
+    
+     if(hero.health === 8) {
+         removeHealth();
+        fullHealth(120,110,100,90,80,70,60,50,30);
+}
+    if(hero.health === 7) {
+         fullHealth(-20,110,100,90,80,70,60,50,30);
+    }
+    
+     if(hero.health === 6) {
+         fullHealth(-20,-20,100,90,80,70,60,50,30);
+    }
+     if(hero.health === 5) {
+         fullHealth(-20,-20,-20,90,80,70,60,50,30);
+    }
+     if(hero.health === 4) {
+         fullHealth(-20,-20,-20,-20,80,70,60,50,30);
+    }   
+     if(hero.health === 3) {
+         fullHealth(-20,-20,-20,-20,-20,70,60,50,30);
+    }    
+     if(hero.health === 2) {
+          removeHealth();
+         fullHealth(-20,-20,-20,-20,-20,-20,60,50,30);
+    }
+     if(hero.health === 1) {
+         fullHealth(-20,-20,-20,-20,-20,-20,-20,50,30);
+    }
+        
+    if(hero.health === 0) {
+        removeHealth();
+        currentScreen = 7;
+    }
+    
+    
+    //if the hero and bitlord touch then the hero will take damage
+    hero.checkForCollision(bitLord);
+    
+    //if the powersource's health is 0 then you are taken to the winning screen
+    if(powerSource.health === 0) {
+        currentScreen = 5;
+    }
+   
+};
+
+//where all the annimation takes place
+draw = function() {
+    
+    //if draws everything inside of the starting screen
+    if (currentScreen === 0) {
+        
+        background(0, 81, 255);
+        
+        for(var i = 0; i < 5; i++) {
+    fill(140, 99, 24);
+    rect(85*i+10,98,40,300);
+    fill(17, 219, 34);
+    ellipse(85*i+29,80,100,100);
+}
+        
+        textSize(25);
+        
+        fill(255, 255, 255);
+        
+        text("Trovato + Rascoe",100,20);
+        
+        text("BIT",170,200);
+        
+        noStroke();
+        
+        drawemoji(-236,188,289);   // David Emoji
+        
+        drawBitmojiHead(416,209,300);
+        
+        drawBitmojiLeftEye(416,209,300);
+        
+        drawBitmojiRightEye(416,209,300); // Jake Emoji
+        drawHat(416,209,300);
+        
+        drawMask(416,209,300);
+        
+        btn1.draw();
+        
+        btn4.draw();
+      
+        btn6.draw();
+    }
+        
+    //draws everything inside of the 1st level
+    if(currentScreen === 1) {
+    background(32, 12, 207);
+    
+    //draws trees
+for(var i = 0; i < 5; i++) {
+    fill(140, 99, 24);
+    rect(85*i+10,98,40,300);
+    fill(17, 219, 34);
+    ellipse(85*i+29,80,100,100);
+}
+    
+    timer(-10);
+    
+    removeHealth(50);
+    
+    hero.draw();
+    
+    zombie.draw();
+    
+    fill(255, 255, 255);
+    
+    textSize(12);
+    
+    text("Time: "+time[0],10,8);
+    
+    text("Health: ",10,28);
+
+    
+    if(posX > 400) {
+        posX = 0;
+        time[0] = time[0] -1;
+    }
+    if(time[0] <= 0) {
+        time[0] = 0;
+    }
+    
+    
+    if(zombie.x > 0 && zombie.x < 600 && zombie.y > 0 && zombie.y < 400) {
+        if(zombie.health === 8) {
+        text("Zombie Health: ", 210,28);
+        removeHealth(300);
+        fullHealth(300,310,320,330,340,350,360,370,30);
+      
+}
+    if(zombie.health === 7) {
+        text("Zombie Health: ", 210,28);
+        removeHealth(300);
+        fullHealth(-20,310,320,330,340,350,360,370,30);
+         
+    }
+    
+     if(zombie.health === 6) {
+         text("Zombie Health: ", 210,28);
+         removeHealth(300);
+         fullHealth(-20,-20,320,330,340,350,360,370,30);
+         
+    }
+     if(zombie.health === 5) {
+         text("Zombie Health: ", 210,28);
+         removeHealth(300);
+         fullHealth(-20,-20,-20,330,340,350,360,370,30);
+         
+    }
+     if(zombie.health === 4) {
+         text("Zombie Health: ", 210,28);
+         removeHealth(300);
+         fullHealth(-20,-20,-20,-20,340,350,360,370,30);
+         
+    }   
+     if(zombie.health === 3) {
+         text("Zombie Health: ", 210,28);
+         removeHealth(300);
+         fullHealth(-20,-20,-20,-20,-20,350,360,370,30);
+         
+    }    
+     if(zombie.health === 2) {
+         text("Zombie Health: ", 210,28);
+         removeHealth(300);
+         fullHealth(-20,-20,-20,-20,-20,-20,360,370,30);
+         
+    }
+     if(zombie.health === 1) {
+         text("Zombie Health: ", 210,28);
+         removeHealth(300);
+         fullHealth(-20,-20,-20,-20,-20,-20,-20,370,30);
+         
+    }
+        
+    if(zombie.health === 0) {
+        
+        
+        removeHealth();
+        zombie.defeated();
+        currentScreen = 3;
+        
+        
+        
+    }
+}
+if(hero.health === 8) {
+         removeHealth();
+        fullHealth(120,110,100,90,80,70,60,50,30);
+}
+    if(hero.health === 7) {
+         fullHealth(-20,110,100,90,80,70,60,50,30);
+    }
+    
+     if(hero.health === 6) {
+         fullHealth(-20,-20,100,90,80,70,60,50,30);
+    }
+     if(hero.health === 5) {
+         fullHealth(-20,-20,-20,90,80,70,60,50,30);
+    }
+     if(hero.health === 4) {
+         fullHealth(-20,-20,-20,-20,80,70,60,50,30);
+    }   
+     if(hero.health === 3) {
+         fullHealth(-20,-20,-20,-20,-20,70,60,50,30);
+    }    
+     if(hero.health === 2) {
+          removeHealth();
+         fullHealth(-20,-20,-20,-20,-20,-20,60,50,30);
+    }
+     if(hero.health === 1) {
+         
+         fullHealth(-20,-20,-20,-20,-20,-20,-20,50,30);
+    }
+        //if the player is defeated then they are sent to the losing screen and must start over
+    if(hero.health === 0) {
+        currentScreen = 7;
+        removeHealth();
+    }
+    
+         //an alogrithm so the zombies will chase the player no matter their coords
+    if(zombie.x > hero.x) {
+        zombie.runL();
+    }
+     
+    if(zombie.x < hero.x) {
+        zombie.runR();
+    }
+    
+    if(zombie.y < hero.y) {
+        zombie.fall();
+    }
+    else {
+        zombie.rise();
+    }
+    
+    //player is harmed if touching the zombie
+    
+     hero.checkForCollision(zombie);
+
+}
+
+//draws everything inside of the 2 level
+    if(currentScreen === 3) {
+        
+        //calls the level 2 function
+        
+        drawlevel2();
+        
+        //algorithm that has the bitminion chase the player no matter their coords
+        if(bitminion.x > hero.x) {
+        bitminion.chaser();
+    }
+    if(bitminion.x+30 < hero.x) {
+        bitminion.chasel();
+    }
+    if(bitminion.y < hero.y) {
+        bitminion.downchase();
+    }
+    if(bitminion.y > hero.y) {
+        bitminion.upchase();
+    }
+    
+    //teleports the player upon contact
+    
+     bitminion.freeze(hero);
+      if(zombie2.x > hero.x) {
+        zombie2.runL();
+    }
+     
+    if(zombie2.x < hero.x) {
+        zombie2.runR();
+    }
+    
+    if(zombie2.y < hero.y) {
+        zombie2.fall();
+    }
+    else {
+        zombie2.rise();
+    }
+    
+    //algorithm for zombie 3:
+    
+    if(zombie3.x > hero.x) {
+        zombie3.runL();
+    }
+     
+    if(zombie3.x < hero.x) {
+        zombie3.runR();
+    }
+    
+    if(zombie3.y < hero.y) {
+        zombie3.fall();
+    }
+    else {
+        zombie3.rise();
+    }
+    
+     if(zombie2.x > hero.x) {
+        zombie2.runL();
+    }
+     
+    if(zombie2.x < hero.x) {
+        zombie2.runR();
+    }
+    
+    if(zombie2.y < hero.y) {
+        zombie2.fall();
+    }
+    else {
+        zombie2.rise();
+    }
+    
+    //algorithm for zombie 3:
+    
+  
+        if(zombie2.x > hero.x) {
+        zombie2.runL();
+    }
+     
+    if(zombie2.x < hero.x) {
+        zombie2.runR();
+    }
+    
+    if(zombie2.y < hero.y) {
+        zombie2.fall();
+    }
+    else {
+        zombie2.rise();
+    }
+    
+    }
+    
+    //if all 3 mobs in level 2 are defeated then it will bring the player to the boss
+    
+    if(zombie2.health === 0 && zombie3.health === 0 && bitminion.health === 0) {
+        currentScreen = 4;
+    }
+    
+    //draws everything inside of the boss fight
+if(currentScreen === 4) {
+    
+    //sets the mob's health, from level 2, to an integer that makes the the conditional above not true and thus not trapping the player in the boss fight if won/lost
+    zombie2.health = -10;
+    zombie3.health = -10;
+    bitminion.health = -10;
+    
+    //calls the boss fight function
+    background(255, 0, 0);
+    bossFight();
+
+}
+    //draws everything inside of the winning screen
+
+
+    //fixes a bug where if the player is on the starting, winning or losing screen, they will no be able to move the character 
+if(currentScreen === 1 || currentScreen === 2 || currentScreen ===3 || currentScreen === 4) {
+    
+    //if the right arrow key is pressed, then the hero will increase in x
+    if(keyIsPressed && keyCode === RIGHT) {
+        hero.rightWalk();
+        sword1.rightWalk();
+}
+
+   //if the right arrow key is pressed, then the hero will decrease in x
+    if(keyIsPressed && keyCode === LEFT) {
+        hero.leftWalk();
+        sword1.leftWalk();
+}
+
+   //If the alt key is pressed, the player will pull out the sword and the sword will check for collision
+    if(keyIsPressed && keyCode === ALT) {
+        sword1.draw();
+        sword1.checkForSwordDmg(zombie);
+         sword1.checkForSwordDmg(zombie2);
+         sword1.checkForSwordDmg(zombie3);
+          sword1.checkForSwordDmgB(bitminion);
+          sword1.checkForSwordDmgS(powerSource);
+          
+}
+    
+    //decreases player's y
+    if(keyIsPressed && keyCode === UP) {
+        hero.jump();
+        sword1.jump();
+        
+}
+
+   //increases player's y
+if(keyIsPressed && keyCode === DOWN) {
+        hero.fall();
+        sword1.fall();
+        
+}
+
+
+     
+      //both check for collision between zombies and hero
+         hero.checkForCollision2(zombie2);
+          hero.checkForCollision3(zombie3);
+
+}
+
+//draws everything inside of the losing screen
+if(currentScreen === 7) {
+    
+    background(35, 102,18);
+    fill(107, 105, 105);
+    rect(175,200,50,50);
+    ellipse(200,200,50,50);
+    fill(255, 255, 255);
+    textSize(12);
+    text("F",195,200);
+    text("R.I.P",185,220);
+    textSize(20);
+    text("Don't worry! You still got this!", 80,100);
+    
+}
+
+//draws everything inside of the mob screen
+
+if(currentScreen === 6) {
+    background(0, 17, 255);
+    fill(255, 255, 255);
+    rect(30,25,345,105);
+    fill(0, 0, 0);
+    textSize(14);
+    text("They rely on teleportation to trap their oppoenents.",40,40);
+    fill(255, 255, 255);
+    rect(30,160,345,105);
+    fill(0, 0, 0);
+     text("A solid unit of the bitlord's army",90,165);
+        drawBitmojiHead(200,90,30);
+        drawBitmojiLeftEye(200,90,30);
+        drawBitmojiRightEye(200,90,30); // Jake Emoji
+        drawHat(200,90,30);
+        drawMask(200,90,30);
+        drawBitmojiBody(200,90,30);
+        zombieS.draw();
+        btn3.draw();
+
+}
+
+if(currentScreen === 8) {
+    background(0, 21, 255);
+    strokeWeight(10);
+    fill(255, 255, 255);
+    rect(20,20,360,360);
+    fill(0, 0, 0);
+    text("The Bitlord is fast, strong and nearly",57,58);
+    text("invincible... except for its powersource.",57,90);
+    textSize(25);
+    text("bitlord: ",50,145);
+     text("power source: ",50,215);
+    bitLordS.draw();
+    powerSourceS.draw();
+    btn7.draw();
+}
+
+if(currentScreen === 9) {
+    background(13, 145, 15);
+    fill(255, 255, 255);
+    rect(20,20,360,360);
+    fill(0, 0, 0);
+    textSize(25);
+    text("Controls:", 150,40);
+    textSize(20);
+    text("left arrow to move left",40,80);
+    text("right arrow to move right",40,130);
+    text("up arrow to move up",40,180);
+    text("down arrow to move down",40,230);
+    text("Alt key to move use the sword",40,280);
+    btn2.draw();
+}
+
+if(currentScreen === 5) {
+    background(0, 0, 255);
+    for(var i = 0; i < 5; i++) {
+    fill(140, 99, 24);
+    rect(85*i+10,98,40,300);
+    fill(17, 219, 34);
+    ellipse(85*i+29,80,100,100);
+    drawemoji(90*i,328,90);
+    
+}
+textSize(38);
+text("We're free!!",100,90);
+
+}
+
+ 
+};
+
+mouseClicked = function() {
+    
+    //if in the mob screen only the next button will be active
+   if(currentScreen === 6) {
+   btn3.handleMouseClick();
+}
+//if in the starting screen only the start,mob and how to play buttons will be active
+   if(currentScreen === 0) {
+    btn4.handleMouseClick();
+    btn1.handleMouseClick();
+    btn6.handleMouseClick();
+}
+   //if in the 2nd half of the mob screen, then only the home button will be active
+   if(currentScreen === 8) {
+    btn2.handleMouseClick();
+    
+}
+   
+   //if in the how to play screen, only the home button will work
+   if(currentScreen === 9) {
+        btn7.handleMouseClick();
+}
+
+};
+
+                         </p>
+        </body> </center>
+   
+  </html>
