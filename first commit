@@ -1,0 +1,218 @@
+//health bars*, characters, setting, splash screen, score system, timer*
+var currentScreen = 0;
+
+var damage = 0;
+
+var health = 8;
+
+var timeCounter = 0;
+
+var time = 600;
+
+var timerSpeed = 6.666;
+
+var posX = 0;
+//game premise: 
+
+
+var Sword = function (x,y) {
+    this.x = x;
+    this.y = y;
+};
+
+Sword.prototype.draw = function() {
+     fill(238, 255, 0);
+    rect(this.x,this.y,10,25);
+    fill(168, 121, 12);
+    rect(this.x-10,208,10,10);
+    fill(179, 165, 165);
+    rect(this.x+10,208,40,10);
+    noStroke();
+    triangle(this.x+50,218,this.x+50,208,this.x+60,213);
+    stroke(0, 0, 0);
+    strokeWeight(1);
+    line(this.x+60,213,211,213);
+    line(this.x+60,this.y+13,this.x+50,this.x+8);
+    line(this.x+60,this.y+13,this.x+50,this.x+19);
+};
+
+var sword = new Sword(200,200);
+
+
+var Hero = function (x,y,width,height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+};
+
+Hero.prototype.draw = function() {
+    this.x = constrain(this.x, 25, height-25);
+    this.y = constrain(this.y, 0, height-100);
+     fill(224, 194, 112);
+     arc(this.x-21,this.y+25,this.width-15,this.height-15,1,245); //hands
+     arc(this.x+21,this.y+25,this.width-15,this.height-15,-95,180);
+     fill(0, 0, 0);
+     rect(this.x-10,this.y+15,this.width-5,this.height-5);  // body
+     ellipse(this.x+15,this.y+20,this.width-10,this.height-10); // shoulders
+     ellipse(this.x-15,this.y+20,this.width-10,this.height-10);
+     fill(224, 194, 112);
+     arc(this.x,this.y+15,this.width-10,this.height-10,1,180); //chest from cut of the shirt
+     ellipse(this.x,this.y,this.width,this.height); //head
+     fill(0, 0, 0);
+     ellipse(this.x+8,this.y,this.width-20,this.height-20);//eyes
+     ellipse(this.x-6,this.y,this.width-20,this.height-20);
+     fill(224, 194, 112);
+     rect(this.x-5,this.y+6,this.width-15,this.height-15);//neck
+     fill(0, 38, 255);
+     rect(this.x-10,this.y+35,this.width-5,this.height-15);//pants
+     fill(0, 38, 255);
+     rect(this.x-10,this.y+45,this.width-5,this.height); //legs
+     stroke(0);
+     line(this.x-1,this.y+45,this.x-1,this.y+69); //pants lines
+     line(this.x-10,this.y+45,this.x+9,this.y+45);
+     fill(255, 255, 255);
+     arc(this.x+0,this.y+5,this.width-15,this.height-15,1,180);
+};
+
+Hero.prototype.rightWalk = function () {
+    this.x += 5;
+};
+Hero.prototype.leftWalk = function () {
+    this.x -= 5;
+};
+Hero.prototype.jump = function () {
+    this.y  = this.y -5;
+};
+Hero.prototype.fall = function () {
+    this.y += 5;
+};
+Hero.prototype.strike = function () {
+   sword.draw();
+};
+
+var hero = new Hero(200,200,25,25);
+    
+
+
+var removeHealth = function () {
+    for(var k = 0; k < 8; k++) {
+        fill(173, 155, 155);
+        rect((10*k)+50,30,10,10);
+    }
+    fill(255, 255, 255);
+    text("health: ",10,40);
+};
+
+var fullHealth = function (health1X,health2X,health3X,health4X,health5X,health6X,health7X,health8X) {
+    fill(62, 242, 12);
+    noStroke();
+        rect((health8X),30,10,10);
+        rect((health7X),30,10,10);
+        rect((health6X),30,10,10);
+        rect((health5X),30,10,10);
+        rect((health4X),30,10,10);
+        rect((health3X),30,10,10);
+        rect((health2X),30,10,10);
+        rect((health1X),30,10,10);
+    fill(245, 245, 245);
+    text("health: ",10,40);
+};
+
+var timer = function () {
+    
+    rect(posX,-20,10,10);
+    
+    posX += timerSpeed;
+    
+};
+
+
+
+draw = function() {
+    
+    background(32, 12, 207);
+    
+    timer(-10);
+    
+    
+    removeHealth();
+    
+    hero.draw();
+    
+    fill(255, 255, 255);
+    
+    text("Time: "+time,10,20);
+    
+    if(posX > 400) {
+        posX = 0;
+        time = time -1;
+    }
+    if(time <= 0) {
+        time = 0;
+    }
+    if (keyIsPressed && keyCode === UP) {
+        timerSpeed = 0;
+    } 
+     if (keyIsPressed && keyCode === DOWN) {
+        timerSpeed = 6.666;
+    } 
+    if(health === 8) {
+        
+        fullHealth(120,110,100,90,80,70,60,50);
+}
+    if(health === 7) {
+         fullHealth(-20,110,100,90,80,70,60,50);
+    }
+    
+     if(health === 6) {
+         fullHealth(-20,-20,100,90,80,70,60,50);
+    }
+     if(health === 5) {
+         fullHealth(-20,-20,-20,90,80,70,60,50);
+    }
+     if(health === 4) {
+         fullHealth(-20,-20,-20,-20,80,70,60,50);
+    }   
+     if(health === 3) {
+         fullHealth(-20,-20,-20,-20,-20,70,60,50);
+    }    
+     if(health === 2) {
+         fullHealth(-20,-20,-20,-20,-20,-20,60,50);
+    }
+     if(health === 1) {
+         fullHealth(-20,-20,-20,-20,-20,-20,-20,50);
+    }
+        
+    if(health === 0) {
+        removeHealth();
+    }
+    
+   
+    
+    if(keyIsPressed && keyCode === RIGHT) {
+        hero.rightWalk();
+}
+
+   
+    if(keyIsPressed && keyCode === LEFT) {
+        hero.leftWalk();
+}
+    
+    
+    if(keyIsPressed && keyCode === 0) {
+        hero.jump();
+}
+    else{
+           hero.fall(); 
+        }
+        
+     if(keyIsPressed && keyCode === ALT) {
+        hero.strike();
+}
+
+        
+
+
+};
+
